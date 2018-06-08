@@ -1,5 +1,5 @@
 //Testing the class Blob
-const Block = require('./block');
+const Block = require('./blockchain/block');
 
 console.log("Goes");
 
