@@ -36,7 +36,7 @@ class Block {
 
     //returns the hash of a block received
     static blockHash(block){
-        return Block.hash(block.timestamp. block.lastHash, block.data);
+        return Block.hash(block.timestamp, block.lastHash, block.data);
     }
 
 
