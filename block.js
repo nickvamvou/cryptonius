@@ -34,6 +34,10 @@ class Block {
         return SHA256(`${timestamp} ${lastHash} ${data}`).toString();
     }
 
+    //returns the hash of a block received
+    static blockHash(block){
+        return Block.hash(block.timestamp. block.lastHash, block.data);
+    }
 
 
 }
