@@ -24,9 +24,6 @@ class P2pServer{
 
         //gets the socket that performed the connection
         server.on("connection", socket => this.connectSocket(socket));
-
-
-
     }
 
     //1-1 PAEI PRWTA SE AUTO POU UPARXEI HDH (NODE-WEB SERVER) KANEI TO CONNECTION ME AUTOU TOU INSTANT TO SOCKET KAI META TO CALLBACK KANEI AUTOU TOU INSTANCE TO SOCKET CONNECT ME AUTO POU HDH UPARXEI
