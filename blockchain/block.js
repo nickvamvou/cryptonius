@@ -1,4 +1,4 @@
-const SHA256 = require('crypto-js/sha256');
+const ChainUtil = require('../chain-util');
 //difficult of mining, you need to find a hash with 0 zeroes in the beginning
 
 const {DIFFICULTY, MINE_RATE} = require('../config');
@@ -35,15 +35,13 @@ class Block {
         //get the last block difficulty
         let {difficulty} = lastBlock;
 
-
-
         const lastHash = lastBlock.hash;
         let nonce = 0; //beginning nonce you can access it outside
         //proof of work by checking with all the nonces
         do {
             nonce++;
             timestamp = Date.now();
-            difficulty = Block.adjustDifficulty(lastBlock, timestamp);
+            // difficulty = Block.adjustDifficulty(lastBlock, timestamp);
             hash = Block.hash(timestamp, lastHash, data, nonce, difficulty);
 
         } while (hash.substring(0, difficulty) !== '0'.repeat(difficulty));
@@ -53,7 +51,7 @@ class Block {
 
 
     static hash(timestamp, lastHash, data, nonce, difficulty){
-        return SHA256(`${timestamp} ${lastHash} ${data} ${nonce} ${difficulty}`).toString();
+        return ChainUtil.hash(`${timestamp} ${lastHash} ${data} ${nonce} ${difficulty}`).toString();
     }
 
     //returns the hash of a block received

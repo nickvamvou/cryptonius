@@ -1,11 +1,11 @@
-//Testing the class Blob
-const Block = require('./blockchain/block');
-
-console.log("Goes");
-
-const block = new Block('foo', 'bar', 'zoo', 'baz');
-
-const fooBlock = Block.mineBlock(Block.genesis(), "foo");
-console.log(fooBlock.toString());
+const Transaction = require('./wallet/transaction');
+const Wallet = require('./wallet/index');
 
 
+//sender wallet
+senderWallet = new Wallet();
+//recipient public key address
+recipientAddress = 'r3c1p13ent';
+amount = 50;
+
+transaction = Transaction.newTransaction(senderWallet, recipientAddress, amount);
