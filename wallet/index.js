@@ -34,18 +34,24 @@ class Wallet{
             return;
         }
 
+
         //check if transaction exceeds in the pool
         //so if there is a transaction with this public key we will update it
         let transaction = transactionPool.existingTransaction(this.publicKey);
 
-        //if transaction exists we want to update the transaction in the pool
+
+
         if(transaction){
+            //if transaction exists we want to update the transaction in the pool
             transaction.update(this, recipient, amount);
         }
         else {
+
             transaction = Transaction.newTransaction(this, recipient, amount);
             transactionPool.updateOrAddTransaction(transaction);
         }
+
+        return transaction;
 
 
     }

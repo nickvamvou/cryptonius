@@ -51,7 +51,7 @@ class Block {
 
 
     static hash(timestamp, lastHash, data, nonce, difficulty){
-        return ChainUtil.hash(`${timestamp} ${lastHash} ${data} ${nonce} ${difficulty}`).toString();
+        return ChainUtil.hash (`${timestamp} ${lastHash} ${data} ${nonce} ${difficulty}`).toString();
     }
 
     //returns the hash of a block received

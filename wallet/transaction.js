@@ -52,7 +52,7 @@ class Transaction{
             //first object output has the amount that must be left to the sender wwallet
             {amount : sendersWallet.balance - amount, address: sendersWallet.publicKey},
             {amount, address: recipientAddress}
-        ])
+        ]);
 
 
         //creating the input object and creating a signature for it. The signature is generated from the public key in wallet

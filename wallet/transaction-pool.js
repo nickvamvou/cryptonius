@@ -16,7 +16,6 @@ class TransactionPool{
         //if exists it means that the transaction exists in the pool and will be updated
         if(transactionWithId){
             this.transactions[this.transactions.indexOf(transactionWithId)] = transaction;
-
         }
         else {
             this.transactions.push(transaction);
@@ -25,7 +24,7 @@ class TransactionPool{
 
     //if the public key exists in a transaction return that transaction
     existingTransaction(publicKey) {
-        return transaction = this.transactions.find(t => t.input.address === publicKey);
+        return this.transactions.find(t => t.input.address === publicKey);
     }
 
 

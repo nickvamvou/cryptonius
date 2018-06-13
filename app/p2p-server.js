@@ -9,11 +9,18 @@ const P2P_PORT = process.env.P2P_PORT || 5001;
 //if present store them in the array
 const peers = process.env.PEERS ? process.env.PEERS.split(',') : [];
 
+//global var that has labels of various data to send over the sockets
+const MESSAGE_TYPES = {
+    chain : 'CHAIN',
+    transaction : 'TRANSACTION'
+};
+
 class P2pServer{
 
-    constructor(blockchain){
+    constructor(blockchain, tp){
         this.blockchain = blockchain;
         this.sockets = [];
+        this.transactionPool = tp;
     }
 
     listen(){
@@ -41,6 +48,7 @@ class P2pServer{
 
     //handles the connection between sockets
     connectSocket(socket){
+        console.log("Socket connected")
         this.sockets.push(socket);
         //register that this socket can receive messages
         this.handleMessage(socket);
@@ -50,18 +58,37 @@ class P2pServer{
 
     //send the chain to every blockchain. Used when creating a new socket and also when this instance mines a block
     sendChain(socket){
-        socket.send(JSON.stringify(this.blockchain.chain));
+        socket.send(JSON.stringify({type : MESSAGE_TYPES.chain,
+                                    chain: this.blockchain.chain}));
     }
 
+    //sends a transaction to other servers. Attach fields to distinguish between sending the blockchain
+    sendTransaction(socket, transaction){
 
-    //this function handles messages that a socket can receive
+        socket.send(JSON.stringify({type : MESSAGE_TYPES.transaction,
+                    transaction : transaction}));
+    }
+
+    //this function handles messages that a socket can receive. Distinguishes between receiving a transaction and receiving a chain
     handleMessage(socket){
         //this function handles messages between sockets
         socket.on('message', message => {
             //receive the new chain
             const data = JSON.parse(message);
-            //check if the blockchain that this server receives is longer than current one
-            this.blockchain.replaceChain(data);
+
+            //distinguishes between a receiving chain and a transaction
+            switch (data.type){
+                case MESSAGE_TYPES.chain:
+                    //check if the blockchain that this server receives is longer than current one
+                    console.log("Received new blockchain");
+                    this.blockchain.replaceChain(data.chain);
+                    break;
+                case MESSAGE_TYPES.transaction:
+                    console.log("Received Transaction to add to the transaction pool");
+                    this.transactionPool.updateOrAddTransaction(data.transaction);
+                    console.log(this.transactionPool.transactions[0]);
+                    break;
+            }
         })
     }
 
@@ -72,6 +99,16 @@ class P2pServer{
             this.sockets.forEach(socket => this.sendChain(socket));
         })
     }
+
+    //broadcasts the transaction when the server gets it
+    broadcastTransaction(transaction){
+        console.log(this.transactionPool.transactions[0]);
+        this.sockets.forEach(socket => this.sendTransaction(socket, transaction));
+    }
+
+
+
+
 
 }
 
