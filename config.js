@@ -5,8 +5,9 @@
 const DIFFICULTY = 3;
 //mine rate
 const MINE_RATE = 3000; //3000 MILLISECONDS
-
 //initial balance when creating a wallet
 const INITIAL_BALANCE = 500;
+//reward transactions
+const MINING_REWARD = 50;
 
-module.exports = {DIFFICULTY, MINE_RATE, INITIAL_BALANCE};
+module.exports = {DIFFICULTY, MINE_RATE, INITIAL_BALANCE, MINING_REWARD};

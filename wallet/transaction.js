@@ -2,6 +2,7 @@
  * Created by nikolasvamvou on 6/11/18.
  */
 const ChainUtil = require('../chain-util');
+const {MINING_REWARD} = require('../config');
 
 class Transaction{
 
@@ -36,9 +37,27 @@ class Transaction{
         return this;
     }
 
+    //get the output returned by the sender from a transaction by accepting the key
+    static outputFromSender(transaction, publicAddressSender){
+        if(transaction.input.address !== publicAddressSender){
+            return;
+        }
+        console.log("Transaction", transaction);
+        return transaction.outputs.find(output => output.address === publicAddressSender);
+    }
+
+
+    //ouput changes based on if the transaction is made by the blockchain (for rewards) system or by a user. It passes the outputs and creates the input for the transaction
+    static transactionWithOutputs(senderWallet, outputs){
+        const transaction = new this();
+        transaction.outputs.push(...outputs);
+        //creating the input object and creating a signature for it. The signature is generated from the public key in wallet
+        Transaction.signTransaction(transaction, senderWallet);
+        return transaction;
+    }
+
     //returns a transaction object, when the user specifies his wallet the recipient wallet and the amount to transfer
     static newTransaction(sendersWallet, recipientAddress, amount){
-        const transaction = new this();
         //check balance
         if(amount > sendersWallet){
             console.log(`The amount ${amountToSend} is exceeding the current balance`);
@@ -48,18 +67,18 @@ class Transaction{
 
         //Every time the user sends the whole amount he has
         //pushing two objects
-        transaction.outputs.push(...[
-            //first object output has the amount that must be left to the sender wwallet
+        return Transaction.transactionWithOutputs(sendersWallet,[ //first object output has the amount that must be left to the sender wwallet
             {amount : sendersWallet.balance - amount, address: sendersWallet.publicKey},
-            {amount, address: recipientAddress}
-        ]);
-
-
-        //creating the input object and creating a signature for it. The signature is generated from the public key in wallet
-        Transaction.signTransaction(transaction, sendersWallet);
-
+            {amount, address: recipientAddress}]);
 
         return transaction;
+    }
+
+    //the miner will receive the award (the transaction) the blockchain wallet will sign this transaction
+    static rewardsTransaction(minerWallet, blockchainWallet){
+        return Transaction.transactionWithOutputs(blockchainWallet, [
+            {amount : MINING_REWARD, address : minerWallet.publicKey}
+        ])
     }
 
     static signTransaction(transaction, senderWallet){
@@ -72,13 +91,13 @@ class Transaction{
         }
     }
 
+    //returns a boolean value of whether the transaction is valid based on its signature
     static verifyTransaction(transaction) {
         return (ChainUtil.verifySignature(
             transaction.input.address,
             transaction.input.signature,
             ChainUtil.hash(transaction.outputs)));
     }
-
 
 
 

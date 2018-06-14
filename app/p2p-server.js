@@ -12,7 +12,8 @@ const peers = process.env.PEERS ? process.env.PEERS.split(',') : [];
 //global var that has labels of various data to send over the sockets
 const MESSAGE_TYPES = {
     chain : 'CHAIN',
-    transaction : 'TRANSACTION'
+    transaction : 'TRANSACTION',
+    clear_transactions : 'CLEAR_TRANSACTIONS'
 };
 
 class P2pServer{
@@ -69,6 +70,13 @@ class P2pServer{
                     transaction : transaction}));
     }
 
+    //sends a message to clear all the trnsactions when a block has been mined
+    sendMessageToClearTransactions(socket){
+        socket.send(JSON.stringify({
+            type : MESSAGE_TYPES.clear_transactions,
+        }))
+    }
+
     //this function handles messages that a socket can receive. Distinguishes between receiving a transaction and receiving a chain
     handleMessage(socket){
         //this function handles messages between sockets
@@ -88,6 +96,10 @@ class P2pServer{
                     this.transactionPool.updateOrAddTransaction(data.transaction);
                     console.log(this.transactionPool.transactions[0]);
                     break;
+                case MESSAGE_TYPES.clear_transactions:
+                    console.log("Block has been mined transaction pool is clearing");
+                    this.transactionPool.clear();
+                    break;
             }
         })
     }
@@ -106,9 +118,9 @@ class P2pServer{
         this.sockets.forEach(socket => this.sendTransaction(socket, transaction));
     }
 
-
-
-
+    clearTransactionPool(){
+        this.sockets.forEach(socket => this.sendMessageToClearTransactions(socket));
+    }
 
 }
 

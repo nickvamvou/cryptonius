@@ -1,11 +1,11 @@
 const Transaction = require('./transaction');
 const Wallet = require('./index');
+const Miner = require('../app/miner')
 
 
 describe('Transaction', () => {
 
     let transaction, senderWallet, recipientAddress, amount;
-
         //sender wallet
         senderWallet = new Wallet();
         //recipient public key address
@@ -27,6 +27,13 @@ describe('Transaction', () => {
     //testing whether transaction can be verified
     it('transaction verification', () => {
         expect(Transaction.verifyTransaction(transaction)).toBe(true);
+    })
+
+
+    describe('creating rewards transaction' , () => {
+        beforeEach(() => {
+            transaction = Transaction.rewardsTransaction(senderWallet, Wallet.blockchainWallet())
+        })
     })
 
 })
